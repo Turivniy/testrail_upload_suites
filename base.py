@@ -17,30 +17,16 @@ class Base:
                 return project
         return None
 
-    @staticmethod
-    def get_result_by_name():
-        result = config.RESULT
-        if result == 'Blocked':
-            return 2
-        elif result == 'Passed':
-            return 1
-        elif result == 'Failed':
-            return 5
-        elif result == 'ProdFailed':
-            return 8
-        elif result == 'Skipped':
-            return 6
-
-    def send_post_add_result (self, id, bug, status_id, add_result):
+    def send_post_add_result(self, some_id, bug, status_id, add_result):
         add_result['status_id'] = status_id
         add_result['custom_launchpad_bug'] = bug
-        send_add_result = 'add_result/' + str(id)
+        send_add_result = 'add_result/' + str(some_id)
         return self.client.send_post(send_add_result, add_result)
 
-    def get_plans(self, project_id): # !
+    def get_plans(self, project_id):  # !
         return self.client.send_get('get_plans/{0}'.format(project_id))
 
-    def get_plan(self, plan_id): # !
+    def get_plan(self, plan_id):  # !
         return self.client.send_get('get_plan/{0}'.format(plan_id))
 
     def is_test_plan_exist(self, test_plan_name):
@@ -49,11 +35,11 @@ class Base:
             return True
         return False
 
-    def get_tests(self, plan_id): # !
+    def get_tests(self, plan_id):  # !
         return self.client.send_get('get_tests/{0}'.format(plan_id))
 
     def get_test_runs(self, plan_id, pattern=None):
-        plans_runs = self.get_plan(plan_id) # !get_plans
+        plans_runs = self.get_plan(plan_id)  # !get_plans
         runs = []
         for run in plans_runs['entries']:
             if pattern:
@@ -64,21 +50,14 @@ class Base:
         return runs
 
     def get_tempest_runs(self, plan_id):
-        runs = self.get_plan(plan_id) # !get_plans
+        runs = self.get_plan(plan_id)  # !get_plans
         tempest_runs = []
         for run in runs['entries']:
             if 'Tempest' in run['name']:
                 tempest_runs.append(run)
         return tempest_runs
 
-    def get_id_of_tempest_runs(self, tempest_runs):
-        tempest_runs_ids = {} #[]
-        for i in tempest_runs:
-            for item in i['runs']:
-                tempest_runs_ids.update({item['id']:item['name']})
-        return tempest_runs_ids
-
-    def get_id_of_failed_tests(self, run_id): #!
+    def get_id_of_failed_tests(self, run_id):  # !
         all_tests = self.get_tests(run_id)
         test_ids = []
         for test in all_tests:
@@ -155,14 +134,7 @@ class Base:
             if plan['name'] == name:
                 return self.get_plan(plan['id'])
 
-    def get_last_tempest_run(self, get_plans):
-        for plans in get_plans:
-            # print dict
-            if (plans.get(u'passed_count') > 1000 or plans.get(
-                    u'blocked_count') > 1000 )and '9.1' in plans.get(u'name'):
-                return plans.get(u'id')
-
-    def add_result(self,test_id , result_to_add):
+    def add_result(self, test_id, result_to_add):
         return self.client.send_post('add_result/{0}'.format(test_id['id']),
                                      result_to_add)
 
@@ -195,7 +167,8 @@ class Base:
         add_case_uri = 'add_case/{section_id}'.format(section_id=section_id)
         return self.client.send_post(add_case_uri, case)
 
-    def prepare_common_results(self, tests, status_id):
+    @staticmethod
+    def prepare_common_results(tests, status_id):
         results = {"results": []}
 
         for test in tests:
@@ -206,8 +179,38 @@ class Base:
             })
         return results
 
-    def get_plan_with_tempest(self):#!
-        get_plans = self.get_plans(3)
+    @staticmethod
+    def get_result_by_name():
+        result = config.RESULT
+        if result == 'Blocked':
+            return 2
+        elif result == 'Passed':
+            return 1
+        elif result == 'Failed':
+            return 5
+        elif result == 'ProdFailed':
+            return 8
+        elif result == 'Skipped':
+            return 6
+
+    @staticmethod
+    def get_id_of_tempest_runs(tempest_runs):
+        tempest_runs_ids = {}  # []
+        for i in tempest_runs:
+            for item in i['runs']:
+                tempest_runs_ids.update({item['id']: item['name']})
+        return tempest_runs_ids
+
+    @staticmethod
+    def get_last_tempest_run(get_plans):
         for plans in get_plans:
-            if plans.get(u'passed_count') > 1000:
-                get_plan = self.get_plan(str(plans.get(u'id')))
+            # print dict
+            if (plans.get(u'passed_count') > 1000 or plans.get(
+                    u'blocked_count') > 1000)and '9.1' in plans.get(u'name'):
+                return plans.get(u'id')
+
+    # def get_plan_with_tempest(self):#!
+    #     get_plans = self.get_plans(3)
+    #     for plans in get_plans:
+    #         if plans.get(u'passed_count') > 1000:
+    #             get_plan = self.get_plan(str(plans.get(u'id')))

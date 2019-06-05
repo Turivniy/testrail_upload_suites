@@ -17,7 +17,7 @@
 import os
 import sys
 
-from base import *
+from base import Base
 import config
 
 import logging
@@ -45,7 +45,6 @@ def get_tags_by_test_name(test_name):
     tags = []
     if test_name.find("[") > -1:
         tags = test_name.split("[")[1][:-1].split(",")
-
     return tags
 
 
