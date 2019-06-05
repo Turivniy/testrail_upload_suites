@@ -76,7 +76,7 @@ def create_tr_test_cases(test_cases, milestone_id, type_id=1, priority_id=4,
             "refs": "",
             "custom_test_group": test_class,
             "custom_test_case_description": test_name,
-             "custom_test_case_steps": [{"Run test": "passed"}],
+            "custom_test_case_steps": [{"Run test": "passed"}],
             "custom_report_label": report_label
         }
         tr_test_cases.append(test_case)
@@ -106,7 +106,7 @@ def main():
         with open(tests_file_path) as f:
             test_cases = [test for test in f.read().split("\n") if test]
             logger.info("Tests file '%s' has been successfully read."
-                     % tests_file_path)
+                        % tests_file_path)
     else:
         raise Exception("Tests file '%s' doesn't exist!" % tests_file_path)
 
@@ -122,20 +122,21 @@ def main():
     suite = call.get_suite_by_name(config.SUITE)
     if not suite:
         logger.info("Tests suite '%s' not found. "
-                 "Creating tests suite..." % config.SUITE)
+                    "Creating tests suite..." % config.SUITE)
 
         suite = call.add_suite(config.SUITE)
         logger.info("Tests suite has benn successfully created.")
     logger.info(suite)
 
     logger.info("Creating test cases for TestRail...")
-    tr_test_cases = create_tr_test_cases(test_cases, milestone["id"],
-                                         type_id=config.TEST_CASE_TYPE_ID,
-                                         priority_id=config.TEST_CASE_PRIORITY_ID,
-                                         qa_team=config.QA_TEAM)
+    tr_test_cases = create_tr_test_cases(
+        test_cases, milestone["id"],
+        type_id=config.TEST_CASE_TYPE_ID,
+        priority_id=config.TEST_CASE_PRIORITY_ID,
+        qa_team=config.QA_TEAM)
     logger.info("Test cases have been successfully created.")
 
-    ##### There are no method called delete_section() in the Base class ###
+    # #### There are no method called delete_section() in the Base class ###
     # if config.DELETE_OLD_SECTIONS:
     #     logger.info("Deleting old sections...")
     #     old_sections = call.get_sections(suite["id"])
