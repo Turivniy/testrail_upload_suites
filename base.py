@@ -163,6 +163,13 @@ class Base:
                                      dict(suite_id=suite_id, name=name,
                                           parent_id=parent_id))
 
+    def delete_section(self, section_id):
+
+        import ipdb; ipdb.set_trace()
+
+        deleted = self.client.send_post('delete_section/{}'.format(section_id))
+        return deleted
+
     def add_case(self, section_id, case):
         add_case_uri = 'add_case/{section_id}'.format(section_id=section_id)
         return self.client.send_post(add_case_uri, case)

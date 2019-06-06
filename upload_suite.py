@@ -84,14 +84,17 @@ def create_tr_test_cases(test_cases, milestone_id, type_id=1, priority_id=4,
     return tr_test_cases
 
 
-def _add_tr_test_case(tr_client, suite_id, tr_test_case):
+def add_tr_test_case(tr_client, suite_id, tr_test_case):
+    all_tests = []
     for i in range(7):
         try:
-            tr_client.add_case(suite_id, tr_test_case)
+            added_test = tr_client.add_case(suite_id, tr_test_case)
+            all_tests.append(added_test)
         except APIError:
             logging.info("APIError")
         else:
             break
+    return all_tests
 
 
 def main():
@@ -136,15 +139,6 @@ def main():
         qa_team=config.QA_TEAM)
     logger.info("Test cases have been successfully created.")
 
-    # #### There are no method called delete_section() in the Base class ###
-    # if config.DELETE_OLD_SECTIONS:
-    #     logger.info("Deleting old sections...")
-    #     old_sections = call.get_sections(suite["id"])
-    #     for section in old_sections:
-    #         if section["parent_id"] is None:
-    #             call.delete_section(section["id"])
-    #     logger.info("Old sections have been successfully deleted.")
-
     sections_map = {}
     for section in sorted(config.SECTIONS_MAP.keys()):
         logger.info("Creating section '%s'..." % section)
@@ -154,9 +148,24 @@ def main():
 
     logger.info("Uploading created test cases to TestRail...")
 
+    all_added_test_cases = []
     for t in tr_test_cases:
-        _add_tr_test_case(call, sections_map[t["section"]], t)
+        test_cases = add_tr_test_case(call, sections_map[t["section"]], t)
+        all_added_test_cases.append(test_cases)
+
     logger.info("Test cases have been successfully uploaded.")
+
+    # delete_empty_sections
+
+    sections_with_tests = []
+    for i in all_added_test_cases:
+        sections_with_tests.append(i[0]['section_id'])
+
+    sections_ids_with_tests = set(sections_with_tests)
+    all_sections_ids = list(sections_map.values())
+    sections_ids_without_tests = list(set(all_sections_ids) - set(sections_ids_with_tests))
+    for section_id in sections_ids_without_tests:
+        call.delete_section(section_id)
 
 
 if __name__ == "__main__":

@@ -30,7 +30,7 @@ SECTIONS_MAP = {
      "Nova": ["compute."],
      "Swift": ["object_storage."],
      "Scenario": ["tempest.scenario."],
-     "Manila": ["manila_tempest_tests"],
+     "Manila": ["manila_tempest_tests."],
      "Ironic": ["ironic_tempest_plugin."],
      "Heat": ["heat_tempest_plugin."],
      "Designate": ["designate_tempest_plugin."],
