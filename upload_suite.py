@@ -15,12 +15,13 @@
 #    under the License.
 
 import os
+import logging
 import sys
 
 from base import Base
-import config
+from testrail import APIError
 
-import logging
+import config
 
 
 logging.basicConfig(
@@ -155,17 +156,17 @@ def main():
 
     logger.info("Test cases have been successfully uploaded.")
 
-    # delete_empty_sections
+    # delete_empty_sections bug in testrail
 
-    sections_with_tests = []
-    for i in all_added_test_cases:
-        sections_with_tests.append(i[0]['section_id'])
-
-    sections_ids_with_tests = set(sections_with_tests)
-    all_sections_ids = list(sections_map.values())
-    sections_ids_without_tests = list(set(all_sections_ids) - set(sections_ids_with_tests))
-    for section_id in sections_ids_without_tests:
-        call.delete_section(section_id)
+    # sections_with_tests = []
+    # for i in all_added_test_cases:
+    #     sections_with_tests.append(i[0]['section_id'])
+    #
+    # sections_ids_with_tests = set(sections_with_tests)
+    # all_sections_ids = list(sections_map.values())
+    # sections_ids_without_tests = list(set(all_sections_ids) - set(sections_ids_with_tests))
+    # for section_id in sections_ids_without_tests:
+    #     call.delete_section(section_id)
 
 
 if __name__ == "__main__":

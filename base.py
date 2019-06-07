@@ -164,11 +164,15 @@ class Base:
                                           parent_id=parent_id))
 
     def delete_section(self, section_id):
-
-        import ipdb; ipdb.set_trace()
-
-        deleted = self.client.send_post('delete_section/{}'.format(section_id))
-        return deleted
+        # Not working bug in testrail
+        section = self.get_section(section_id)
+        print('SECTION', section)
+        try:
+            deleted = self.client.send_post('delete_section/{}'.format(section_id), section)
+            print('DELETED', deleted)
+        except Exception:
+            pass
+        return
 
     def add_case(self, section_id, case):
         add_case_uri = 'add_case/{section_id}'.format(section_id=section_id)
